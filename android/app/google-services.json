@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "554440591795",
+    "project_id": "jailbreaking-59729",
+    "storage_bucket": "jailbreaking-59729.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:554440591795:android:8d73c6869fd566a7a023c6",
+        "android_client_info": {
+          "package_name": "com.example.jailbreak_detection"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAL4eTLfvi0fLxlF-rxJWMZ2t0Zm3xMnxw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:554440591795:android:4f23525a2ed36b20a023c6",
+        "android_client_info": {
+          "package_name": "com.example.jailbreaking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAL4eTLfvi0fLxlF-rxJWMZ2t0Zm3xMnxw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
