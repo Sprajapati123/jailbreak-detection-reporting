@@ -46,6 +46,9 @@ dependencies:
   overlay_kit: ^1.0.8
   flutter_local_notifications: ^13.0.0
   google_fonts: ^4.0.1
+  flutter_jailbreak_detection:
+  device_info_plus:
+  http:
 
 dev_dependencies:
   flutter_test:
