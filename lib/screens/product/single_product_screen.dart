@@ -210,7 +210,7 @@ class _SingleProductBodyState extends State<SingleProductBody> {
                           errorBuilder:
                               (BuildContext context, Object exception, StackTrace? stackTrace) {
                             return Image.asset(
-                              'assets/images/logo.png',
+                              'assets/images/default.jpg',
                               height: 400,
                               width: double.infinity,
                               fit: BoxFit.cover,

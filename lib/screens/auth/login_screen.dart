@@ -7,6 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_jailbreak_detection/flutter_jailbreak_detection.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:jailbreak_detection/services/api_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/local_notification_service.dart';
@@ -27,8 +29,101 @@ class _LoginScreenState extends State<LoginScreen> {
   bool? _developerMode;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+  Future<bool> gainRootAccessAndroid() async {
+    try {
+      // Attempt to execute a root command
+      ProcessResult result = await Process.run('su', ['-c', 'id']);
+      if (result.stdout.toString().contains('uid=0')) {
+        print("Root access granted: ${result.stdout}");
+        return true; // Root access granted
+      }
+    } catch (e) {
+      print("Failed to gain root access: $e");
+    }
+    return false; // Root access not available
+  }
+
+  Future<void> checkAndroidRootAccess() async {
+    bool hasRootAccess = await gainRootAccessAndroid();
+    if (hasRootAccess) {
+      print("Root access successfully gained!");
+    } else {
+      print("Root access denied or not available.");
+    }
+  }
+
+  Future<bool> gainRootAccessIOS() async {
+    try {
+      // Try writing to a protected system directory
+      File testFile = File('/private/root_test.txt');
+      await testFile.writeAsString("Testing root access");
+      print("File written to restricted area: ${testFile.path}");
+      await testFile.delete(); // Cleanup
+      return true; // Access successful
+    } catch (e) {
+      print("Failed to gain root access on iOS: $e");
+    }
+    return false; // Root access not available
+  }
+
+  Future<void> checkIOSRootAccess() async {
+    bool hasRootAccess = await gainRootAccessIOS();
+    if (hasRootAccess) {
+      print("Root access successfully simulated on iOS!");
+    } else {
+      print("Root access denied or device not jailbroken.");
+    }
+  }
+
+  Future<bool> gainRootAccess() async {
+    if (Platform.isAndroid) {
+      return await gainRootAccessAndroid();
+    } else if (Platform.isIOS) {
+      return await gainRootAccessIOS();
+    }
+    print("Unsupported platform.");
+    return false;
+  }
+
+  Future<void> testRootAccess() async {
+    bool rootAccess = await gainRootAccess();
+    if (rootAccess) {
+      print("Root access successfully simulated!");
+    } else {
+      print("Root access denied or device is secure.");
+    }
+  }
+
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
+    bool unauthorizedApps = await checkUnauthorizedApps();
+    if (unauthorizedApps) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Alert'),
+            content: Text('Unauthorized apps detected!'),
+            actions: [
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  // Perform an action
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     bool jailbroken;
     bool developerMode;
 
@@ -59,6 +154,44 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  Future<bool> checkUnauthorizedApps() async {
+    // Define suspicious paths for Android and iOS
+    List<String> suspiciousPaths = Platform.isAndroid
+        ? [
+            "/system/app/SuperSU/",
+            "/system/xbin/su",
+            "/system/bin/su",
+            "/system/sd/xbin/su",
+            "/sbin/su",
+            "/data/local/xbin/su",
+            "/data/local/bin/su",
+            "/data/local/su",
+            "/system/su",
+            "/system/bin/.ext/.su",
+            "/system/usr/we-need-root/su-backup",
+          ]
+        : [
+            "/Applications/Cydia.app",
+            "/Library/MobileSubstrate/MobileSubstrate.dylib",
+            "/bin/bash",
+            "/usr/sbin/sshd",
+            "/etc/apt"
+          ];
+
+    try {
+      // Check for each path
+      for (String path in suspiciousPaths) {
+        if (await File(path).exists()) {
+          return true; // Found suspicious app or file
+        }
+      }
+    } catch (e) {
+      debugPrint("Error checking unauthorized apps: $e");
+    }
+
+    return false; // No suspicious apps found
+  }
+
   // Method to add data
   Future<void> addData(Map<String, dynamic> deviceData) async {
     try {
@@ -68,6 +201,10 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       print("Error sending device details to Firebase: $e");
     }
+  }
+
+  void showDebugInfo() {
+    print('Debug Info: API Keys, Internal Configurations, Sensitive Logic.');
   }
 
   bool _obscureTextPassword = true;
@@ -80,36 +217,45 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     _ui.loadState(true);
     try {
-      if (_jailbroken == true) {
-        // Send to Firebase
-        final deviceDetails = await getDeviceDetails();
-        deviceDetails["jailbroken"] = _jailbroken;
-        deviceDetails["developerMode"] = _developerMode;
-        deviceDetails["email"] = _emailController.text.trim();
-        deviceDetails["created_at"] = FieldValue.serverTimestamp();
+      // Send to Firebase
 
-        // Add device details to Firestore
-        await addData(deviceDetails);
+      final deviceDetails = await getDeviceDetails();
+      deviceDetails["jailbroken"] = _jailbroken;
+      deviceDetails["developerMode"] = _developerMode;
+      deviceDetails["email"] = _emailController.text.trim();
+      deviceDetails["created_at"] = FieldValue.serverTimestamp();
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-              "Your device is jailbroken. Device details have been sent to Firebase."),
-        ));
-      } else {
-        await _authViewModel
-            .login(_emailController.text, _passwordController.text)
-            .then((value) {
-          NotificationService.display(
-            title: "Welcome back",
-            body:
-                "Hello ${_authViewModel.loggedInUser?.name},\n Hope you are having a wonderful day.",
-          );
-          Navigator.of(context).pushReplacementNamed('/dashboard');
-        }).catchError((e) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(e.message.toString())));
-        });
+      // Add device details to Firestore
+      await addData(deviceDetails);
+
+      showDebugInfo();
+
+      ApiService().storeInsecureData();
+      ApiService().fetchInsecureData();
+      if(_jailbroken == true){
+
+        print(
+            "Your device is jailbroken. Device details have been sent to Firebase.");
+
       }
+      await _authViewModel
+          .login(_emailController.text, _passwordController.text)
+          .then((value) {
+        NotificationService.display(
+          title: "Welcome back",
+          body:
+              "Hello ${_authViewModel.loggedInUser?.name},\n Hope you are having a wonderful day.",
+        );
+        if(_authViewModel.loggedInUser?.type == "admin"){
+          Navigator.of(context).pushReplacementNamed('/admin');
+        }else{
+
+        Navigator.of(context).pushReplacementNamed('/dashboard');
+        }
+      }).catchError((e) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.message.toString())));
+      });
     } catch (err) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(err.toString())));
@@ -126,6 +272,8 @@ class _LoginScreenState extends State<LoginScreen> {
       _ui = Provider.of<GlobalUIViewModel>(context, listen: false);
       _authViewModel = Provider.of<AuthViewModel>(context, listen: false);
     });
+    testRootAccess();
+
     initPlatformState();
 
     super.initState();
@@ -162,7 +310,6 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     }
-
 
     return deviceData;
   }

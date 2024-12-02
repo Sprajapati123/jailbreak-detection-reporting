@@ -79,13 +79,13 @@ class _MyProductScreenState extends State<MyProductScreen> {
             leading: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Image.network(
-                  e.imageUrl.toString(),
+                  "",
                   height: 300,
                   width: 100,
                   fit: BoxFit.cover,
                   errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
                     return Image.asset(
-                      'assets/images/logo.png',
+                      'assets/images/default.jpg',
                       height: 300,
                       width: 100,
                       fit: BoxFit.cover,

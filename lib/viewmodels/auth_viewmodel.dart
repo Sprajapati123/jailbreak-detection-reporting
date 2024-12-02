@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../models/favorite_model.dart';
 import '../models/product_model.dart';
@@ -24,11 +25,16 @@ class AuthViewModel with ChangeNotifier {
 
   UserModel? _loggedInUser;
   UserModel? get loggedInUser => _loggedInUser;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   Future<void> login(String email, String password) async {
     try {
       var response = await AuthRepository().login(email, password);
       _user = response.user;
+
+      await _secureStorage.write(key: 'email', value: email);
+      await _secureStorage.write(key: 'password', value: password);
+
       _loggedInUser = await AuthRepository().getUserDetail(_user!.uid, _token);
       notifyListeners();
     } catch (err) {

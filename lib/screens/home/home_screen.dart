@@ -232,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     fit: BoxFit.cover,
                     errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
                       return Image.asset(
-                        'assets/images/logo.png',
+                        'assets/images/default.jpg',
                         height: 300,
                         width: double.infinity,
                         fit: BoxFit.cover,

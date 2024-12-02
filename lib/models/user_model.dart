@@ -22,6 +22,7 @@ class UserModel {
     this.fcm,
     this.email,
     this.password,
+    this.type,
   });
 
   String? id;
@@ -34,6 +35,7 @@ class UserModel {
   String? fcm;
   String? email;
   String? password;
+  String? type;
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
         id: json["id"],
@@ -46,6 +48,7 @@ class UserModel {
         fcm: json["fcm"],
         email: json["email"],
         password: json["password"],
+        type: json["type"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -59,6 +62,7 @@ class UserModel {
         "fcm": fcm,
         "email": email,
         "password": password,
+        "type": type,
       };
   factory UserModel.fromFirebaseSnapshot(DocumentSnapshot<Map<String, dynamic>> json) => UserModel(
         id: json.id,
@@ -71,6 +75,7 @@ class UserModel {
         fcm: json["fcm"],
         email: json["email"],
         password: json["password"],
+        type: json["type"],
       );
 
 }

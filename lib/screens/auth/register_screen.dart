@@ -49,7 +49,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               password: _passwordController.text,
             phone: _phoneNumberController.text,
             username: _usernameController.text,
-            name: _nameController.text
+            name: _nameController.text,
+              type: "user"
           )).then((value) {
 
             NotificationService.display(
@@ -82,9 +83,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Image.asset(
                     "assets/images/logo.jpg",
                     height: 200,
-                    width: 20,
+                    width: 200,
                   ),
-                  SizedBox(height: 10,),
+                  const SizedBox(height: 10,),
                   TextFormField(
                     controller: _nameController,
                     validator: ValidateSignup.name,

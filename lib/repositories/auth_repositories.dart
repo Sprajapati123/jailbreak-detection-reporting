@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../models/user_model.dart';
 import '../services/firebase_service.dart';
@@ -64,10 +65,13 @@ class AuthRepository {
       rethrow;
     }
   }
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   Future<void> logout() async {
     try {
       await FirebaseService.firebaseAuth.signOut();
+      await _secureStorage.delete(key: 'email');
+      await _secureStorage.delete(key: 'password');
     } catch (err) {
       rethrow;
     }

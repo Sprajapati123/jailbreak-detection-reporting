@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jailbreak_detection/screens/admin/admin_screen.dart';
 import 'package:jailbreak_detection/screens/auth/forget_password_screen.dart';
 import 'package:jailbreak_detection/screens/auth/login_screen.dart';
 import 'package:jailbreak_detection/screens/auth/register_screen.dart';
@@ -27,6 +28,9 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   NotificationService.initialize();
+  NotificationService notificationService = NotificationService();
+  await notificationService.requestPermission();
+
   runApp(MyApp());
 }
 
@@ -69,6 +73,7 @@ class MyApp extends StatelessWidget {
             ),
             initialRoute: "/splash",
             routes: {
+              "/admin": (BuildContext context) => AdminScreen(),
               "/login": (BuildContext context) => LoginScreen(),
               "/splash": (BuildContext context) => SplashScreen(),
               "/register": (BuildContext context) => RegisterScreen(),
