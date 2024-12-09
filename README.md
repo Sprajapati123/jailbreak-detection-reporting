@@ -1,16 +1,6 @@
 # jailbreak_detection
 
-A new Flutter project.
-
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+The Jailbreaking Detection System is designed to identify and mitigate risks associated with jailbroken or rooted mobile devices. This user manual provides step-by-step instructions on how to use the mobile application and the admin dashboard to detect vulnerabilities, log issues, and notify users or administrators.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
