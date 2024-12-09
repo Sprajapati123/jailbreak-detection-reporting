@@ -6,6 +6,9 @@ The Jailbreaking Detection System is designed to identify and mitigate risks ass
 
 Developer Guide
 You need flutter version 3.10.7 and Java version 19 to clone the project.
+
+
+
  
 Mobile Application User Guide
 Login and Registration: Upon launching the app, you will be prompted to log in or register using your credentials. New users must provide basic information to create an account.
@@ -15,6 +18,9 @@ Device Status Scanning: Once logged in, the application automatically scans your
 Viewing Results: After scanning, the app displays a detailed report of your device's security status. 
 
 Notifications: If your device is detected as vulnerable, you will receive a real-time notification. 
+
+
+
 
 Admin Dashboard User Guide
 Accessing the Dashboard: Log in using your administrator credentials in the same app.
